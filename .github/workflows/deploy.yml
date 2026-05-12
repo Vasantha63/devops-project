@@ -1,0 +1,26 @@
+name: DevOps Pipeline
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Build Docker image
+      run: |
+        docker build -t devops-project .
+        echo "Build success!"
+
+    - name: Test app
+      run: |
+        docker run -d -p 5000:5000 --name test-app devops-project
+        sleep 3
+        curl http://localhost:5000/health
+        docker stop test-app
+        echo "Test passed!"
